@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPERACIÓN NEOGRANADINA - Academic Escape Room</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #1a5c2a;
+    --verde-claro: #2d8c42;
+    --dorado: #c9a84c;
+    --dorado-claro: #f0d080;
+    --rojo: #8B1A1A;
+    --crema: #f5f0e0;
+    --oscuro: #0d1f0d;
+    --gris: #2a2a2a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--oscuro);
+    color: var(--crema);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .bg-pattern {
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(201,168,76,0.03) 30px, rgba(201,168,76,0.03) 31px),
+      repeating-linear-gradient(-45deg, transparent, transparent 30px, rgba(26,92,42,0.05) 30px, rgba(26,92,42,0.05) 31px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen { display: none; position: relative; z-index: 1; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+
+  /* ===== PANTALLA DE BIENVENIDA ===== */
+  #screen-intro {
+    text-align: center;
+    background: radial-gradient(ellipse at center, #1a3d1a 0%, #0d1f0d 60%);
+  }
+
+  .escudo-wrapper { position: relative; margin-bottom: 20px; }
+  .escudo {
+    width: 120px; height: 120px;
+    border: 4px solid var(--dorado);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #1a5c2a, #0d3018);
+    font-size: 60px;
+    box-shadow: 0 0 30px rgba(201,168,76,0.4);
+    animation: pulseEscudo 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseEscudo {
+    0%, 100% { box-shadow: 0 0 20px rgba(201,168,76,0.3); }
+    50% { box-shadow: 0 0 50px rgba(201,168,76,0.7); }
+  }
+
+  .titulo-principal {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(28px, 6vw, 56px);
+    font-weight: 700;
+    color: var(--dorado);
+    letter-spacing: 4px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    margin-bottom: 8px;
+  }
+
+  .subtitulo {
+    font-family: 'Exo 2', sans-serif;
+    font-size: clamp(13px, 2.5vw, 18px);
+    color: var(--crema);
+    opacity: 0.85;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+  }
+
+  .clasificacion-badge {
+    display: inline-block;
+    background: var(--rojo);
+    border: 2px solid var(--dorado);
+    padding: 6px 20px;
+    border-radius: 4px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .mission-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-left: 4px solid var(--dorado);
+    padding: 20px 30px;
+    max-width: 600px;
+    text-align: left;
+    margin-bottom: 30px;
+    border-radius: 4px;
+  }
+
+  .mission-card h3 {
+    font-family: 'Oswald', sans-serif;
+    color: var(--dorado);
+    font-size: 14px;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+  }
+
+  .mission-card p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #d0c8b0;
+  }
+
+  .instrucciones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    max-width: 600px;
+    margin-bottom: 35px;
+  }
+
+  .instruccion-item {
+    background: rgba(26,92,42,0.3);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 15px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .instruccion-item .icon { font-size: 28px; margin-bottom: 8px; }
+  .instruccion-item strong { display: block; color: var(--dorado); margin-bottom: 4px; font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
+
+  .btn-primary {
+    background: var(--dorado);
+    color: var(--oscuro);
+    border: none;
+    padding: 16px 50px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-primary:hover {
+    background: var(--dorado-claro);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(201,168,76,0.4);
+  }
+
+  /* ===== HUD ===== */
+  .hud {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(13,31,13,0.95);
+    border-bottom: 2px solid var(--dorado);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .hud-section { display: flex; align-items: center; gap: 15px; }
+  .hud-label { font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 2px; color: var(--dorado); opacity: 0.7; }
+  .hud-value { font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700; color: var(--dorado); }
+
+  .vidas-display { display: flex; gap: 5px; }
+  .vida { font-size: 20px; transition: all 0.3s; }
+  .vida.perdida { filter: grayscale(1); opacity: 0.3; }
+
+  .barra-progreso-wrap { width: 200px; }
+  .barra-progreso {
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .barra-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--verde-claro), var(--dorado));
+    transition: width 0.5s ease;
+    border-radius: 4px;
+  }
+
+  /* ===== PANTALLA DE NIVEL ===== */
+  #screen-nivel {
+    background: radial-gradient(ellipse at center, #1a3d1a 0%, #0d1f0d 60%);
+    text-align: center;
+    padding-top: 80px;
+  }
+
+  .nivel-badge {
+    background: var(--rojo);
+    border: 2px solid var(--dorado);
+    padding: 8px 25px;
+    border-radius: 30px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+
+  .nivel-titulo {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(30px, 6vw, 55px);
+    color: var(--dorado);
+    margin-bottom: 10px;
+  }
+
+  .nivel-descripcion {
+    max-width: 500px;
+    color: #c0b890;
+    line-height: 1.7;
+    margin-bottom: 30px;
+    font-size: 15px;
+  }
+
+  .temas-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 35px;
+  }
+
+  .chip {
+    background: rgba(26,92,42,0.4);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--dorado-claro);
+    letter-spacing: 1px;
+  }
+
+  /* ===== PREGUNTA ===== */
+  #screen-pregunta {
+    padding-top: 90px;
+    background: radial-gradient(ellipse at center, #141f14 0%, #0d1f0d 70%);
+    justify-content: flex-start;
+  }
+
+  .pregunta-container {
+    width: 100%;
+    max-width: 750px;
+    padding: 20px;
+    margin: 0 auto;
+  }
+
+  .pregunta-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: rgba(201,168,76,0.6);
+    letter-spacing: 1px;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .tipo-badge {
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 4px 12px;
+    border-radius: 3px;
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .pregunta-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 20px;
+  }
+
+  .pregunta-texto {
+    font-size: clamp(16px, 2.5vw, 20px);
+    line-height: 1.6;
+    color: var(--crema);
+    margin-bottom: 25px;
+  }
+
+  .opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .opcion-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    color: var(--crema);
+    padding: 15px 20px;
+    text-align: left;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .opcion-btn:hover:not(:disabled) {
+    background: rgba(201,168,76,0.12);
+    border-color: rgba(201,168,76,0.5);
+    transform: translateX(5px);
+  }
+
+  .opcion-btn.correcta {
+    background: rgba(26,92,42,0.4) !important;
+    border-color: var(--verde-claro) !important;
+    color: #90e890 !important;
+  }
+
+  .opcion-btn.incorrecta {
+    background: rgba(139,26,26,0.4) !important;
+    border-color: #cc4444 !important;
+    color: #ff9999 !important;
+  }
+
+  .opcion-btn.mostrar-correcta {
+    background: rgba(26,92,42,0.25) !important;
+    border-color: var(--verde-claro) !important;
+  }
+
+  .opcion-letra {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  /* ===== FEEDBACK ===== */
+  .feedback-box {
+    padding: 18px 22px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: none;
+    animation: slideIn 0.3s ease;
+    border-left: 4px solid;
+  }
+
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .feedback-box.correcto {
+    background: rgba(26,92,42,0.3);
+    border-left-color: var(--verde-claro);
+    display: block;
+  }
+
+  .feedback-box.incorrecto {
+    background: rgba(139,26,26,0.3);
+    border-left-color: #cc4444;
+    display: block;
+  }
+
+  .feedback-titulo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .feedback-texto { font-size: 14px; line-height: 1.7; color: #c8c0a0; }
+
+  .btn-siguiente {
+    background: transparent;
+    border: 2px solid var(--dorado);
+    color: var(--dorado);
+    padding: 13px 35px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: none;
+    margin-top: 10px;
+  }
+
+  .btn-siguiente:hover { background: var(--dorado); color: var(--oscuro); }
+
+  /* ===== BONUS COFRE ===== */
+  .bonus-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bonus-overlay.show { display: flex; }
+
+  .bonus-card {
+    background: linear-gradient(135deg, #1a3d1a, #0d2010);
+    border: 3px solid var(--dorado);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    animation: aparecer 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes aparecer {
+    from { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+    to { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .bonus-icono { font-size: 60px; margin-bottom: 15px; }
+  .bonus-titulo { font-family: 'Oswald', sans-serif; font-size: 28px; color: var(--dorado); margin-bottom: 10px; }
+  .bonus-texto { color: #c0b890; margin-bottom: 25px; line-height: 1.6; }
+
+  /* ===== ENTRE NIVELES ===== */
+  #screen-entre-niveles {
+    text-align: center;
+    background: radial-gradient(ellipse at center, #1a3d1a 0%, #0d1f0d 60%);
+    padding-top: 80px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    max-width: 450px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  .stat-num { font-family: 'Oswald', sans-serif; font-size: 36px; color: var(--dorado); }
+  .stat-lbl { font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+  /* ===== GRAN RETO FINAL ===== */
+  #screen-gran-reto {
+    padding-top: 90px;
+    background: radial-gradient(ellipse at center, #1a0d0d 0%, #0d0d1f 70%);
+    justify-content: flex-start;
+  }
+
+  .gran-reto-header {
+    text-align: center;
+    margin-bottom: 25px;
+    animation: granReto 1s ease-in-out infinite alternate;
+  }
+
+  @keyframes granReto {
+    from { text-shadow: 0 0 20px rgba(201,168,76,0.5); }
+    to { text-shadow: 0 0 50px rgba(201,168,76,1); }
+  }
+
+  .textarea-respuesta {
+    width: 100%;
+    min-height: 150px;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(201,168,76,0.3);
+    border-radius: 8px;
+    color: var(--crema);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 15px;
+    padding: 15px;
+    resize: vertical;
+    outline: none;
+    line-height: 1.6;
+  }
+
+  .textarea-respuesta:focus { border-color: var(--dorado); }
+
+  .criterios-list {
+    list-style: none;
+    margin-top: 15px;
+  }
+
+  .criterios-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 13px;
+    color: #b0a880;
+    display: flex;
+    gap: 10px;
+  }
+
+  .criterios-list li::before { content: "▸"; color: var(--dorado); }
+
+  /* ===== DERROTA ===== */
+  #screen-derrota {
+    text-align: center;
+    background: radial-gradient(ellipse at center, #2a0d0d 0%, #0d0d0d 60%);
+  }
+
+  /* ===== VICTORIA ===== */
+  #screen-victoria {
+    text-align: center;
+    background: radial-gradient(ellipse at center, #1a3a0d 0%, #0d1f0d 60%);
+    padding-top: 80px;
+  }
+
+  .certificado {
+    background: linear-gradient(135deg, #1a3d1a 0%, #0d2010 100%);
+    border: 4px solid var(--dorado);
+    border-radius: 12px;
+    padding: 40px;
+    max-width: 600px;
+    position: relative;
+    margin-bottom: 25px;
+  }
+
+  .certificado::before, .certificado::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 8px;
+    pointer-events: none;
+  }
+
+  .cert-estrella { font-size: 50px; margin-bottom: 15px; }
+  .cert-titulo-doc { font-family: 'Oswald', sans-serif; font-size: 14px; letter-spacing: 4px; color: var(--dorado); opacity: 0.7; margin-bottom: 5px; }
+  .cert-nombre { font-family: 'Oswald', sans-serif; font-size: 36px; color: var(--dorado); margin-bottom: 10px; }
+  .cert-texto { font-size: 14px; color: #c0b890; line-height: 1.8; margin-bottom: 20px; }
+  .cert-escudo { font-size: 40px; margin-bottom: 5px; }
+  .cert-universidad { font-family: 'Oswald', sans-serif; font-size: 13px; letter-spacing: 2px; color: var(--dorado); opacity: 0.8; }
+  .cert-fecha { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 5px; }
+
+  .estrellas-animadas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 50;
+  }
+
+  .estrella-particle {
+    position: absolute;
+    font-size: 20px;
+    animation: caer 3s ease-in forwards;
+    opacity: 0;
+  }
+
+  @keyframes caer {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ===== UTILIDADES ===== */
+  .texto-dorado { color: var(--dorado); }
+  .sep { width: 60px; height: 2px; background: var(--dorado); margin: 15px auto; opacity: 0.5; }
+
+  @media (max-width: 600px) {
+    .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .instrucciones-grid { grid-template-columns: repeat(2, 1fr); }
+    .pregunta-card { padding: 20px; }
+    .hud { flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .barra-progreso-wrap { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-pattern"></div>
+
+<!-- HUD (oculto en intro) -->
+<div class="hud" id="hud" style="display:none">
+  <div class="hud-section">
+    <div>
+      <div class="hud-label">NIVEL</div>
+      <div class="hud-value" id="hud-nivel">1</div>
+    </div>
+    <div>
+      <div class="hud-label">PUNTOS</div>
+      <div class="hud-value" id="hud-puntos">0</div>
+    </div>
+  </div>
+  <div class="hud-section">
+    <div class="barra-progreso-wrap">
+      <div class="hud-label" id="hud-prog-label">MISIÓN 1/10</div>
+      <div class="barra-progreso"><div class="barra-fill" id="barra-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="hud-section">
+    <div>
+      <div class="hud-label">VIDAS</div>
+      <div class="vidas-display" id="vidas-display">
+        <span class="vida">❤️</span>
+        <span class="vida">❤️</span>
+        <span class="vida">❤️</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PANTALLA INTRO ============ -->
+<div class="screen active" id="screen-intro">
+  <div class="escudo-wrapper">
+    <div class="escudo">🦅</div>
+  </div>
+  <div class="titulo-principal">OPERACIÓN<br>NEOGRANADINA</div>
+  <div class="subtitulo">ACADEMIC ESCAPE ROOM · CÁTEDRA NEOGRANADINA · UMNG</div>
+  <div class="clasificacion-badge">⚠ MISIÓN CLASIFICADA: CONOCIMIENTO TOTAL REQUERIDO ⚠</div>
+
+  <div class="mission-card">
+    <h3>📋 BRIEFING DE MISIÓN</h3>
+    <p>Agente, tu país y tu universidad necesitan de tus conocimientos. Completa los <strong>2 niveles operativos</strong> respondiendo sobre la UMNG, Colombia, la familia, la ciencia, la tecnología y la cultura de paz. Demuestra que eres digno del honor neogranadino.</p>
+  </div>
+
+  <div class="instrucciones-grid">
+    <div class="instruccion-item">
+      <div class="icon">⚡</div>
+      <strong>2 NIVELES</strong>
+      Básico y Avanzado
+    </div>
+    <div class="instruccion-item">
+      <div class="icon">❤️</div>
+      <strong>3 VIDAS</strong>
+      No las desperdicies
+    </div>
+    <div class="instruccion-item">
+      <div class="icon">🏆</div>
+      <strong>80% MÍNIMO</strong>
+      Para superar la misión
+    </div>
+    <div class="instruccion-item">
+      <div class="icon">📜</div>
+      <strong>CERTIFICADO</strong>
+      Al completar todo
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="iniciarJuego()">⚔ INICIAR MISIÓN</button>
+</div>
+
+<!-- ============ PANTALLA NIVEL ============ -->
+<div class="screen" id="screen-nivel">
+  <div class="nivel-badge" id="nivel-badge">NIVEL 1 · OPERATIVO BÁSICO</div>
+  <div class="nivel-titulo" id="nivel-titulo">RECONOCIMIENTO<br>DEL TERRITORIO</div>
+  <div class="sep"></div>
+  <div class="nivel-descripcion" id="nivel-descripcion">
+    Demuestra tu conocimiento sobre los fundamentos de la UMNG, Colombia, la familia y la ciencia. Responde con precisión para acumular puntos y avanzar al siguiente nivel.
+  </div>
+  <div class="temas-chips" id="nivel-temas"></div>
+  <button class="btn-primary" id="btn-nivel-start" onclick="comenzarNivel()">🎯 COMENZAR NIVEL</button>
+</div>
+
+<!-- ============ PANTALLA PREGUNTA ============ -->
+<div class="screen" id="screen-pregunta">
+  <div class="pregunta-container">
+    <div class="pregunta-meta">
+      <span id="pregunta-num">MISIÓN 01/10</span>
+      <span class="tipo-badge" id="tipo-badge">OPCIÓN MÚLTIPLE</span>
+    </div>
+
+    <div class="pregunta-card">
+      <div class="pregunta-texto" id="pregunta-texto">Cargando misión...</div>
+      <div class="opciones" id="opciones-container"></div>
+    </div>
+
+    <div class="feedback-box" id="feedback-box">
+      <div class="feedback-titulo" id="feedback-titulo"></div>
+      <div class="feedback-texto" id="feedback-texto"></div>
+    </div>
+
+    <button class="btn-siguiente" id="btn-siguiente" onclick="siguientePregunta()">
+      SIGUIENTE MISIÓN →
+    </button>
+  </div>
+</div>
+
+<!-- ============ ENTRE NIVELES ============ -->
+<div class="screen" id="screen-entre-niveles">
+  <div class="nivel-badge">NIVEL 1 SUPERADO</div>
+  <div style="font-size:60px;margin:15px">🎖</div>
+  <div class="nivel-titulo" style="font-size:36px">¡PRIMERA BASE TOMADA!</div>
+  <div class="sep"></div>
+  <p style="color:#c0b890;max-width:400px;line-height:1.7;margin-bottom:30px;font-size:15px">
+    Excelente desempeño, agente. Has superado el reconocimiento básico. Ahora te enfrentas al nivel avanzado: preguntas de análisis, cultura de paz y el Gran Reto Final.
+  </p>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" id="stats-correctas">0</div>
+      <div class="stat-lbl">CORRECTAS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stats-puntos">0</div>
+      <div class="stat-lbl">PUNTOS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stats-racha">0</div>
+      <div class="stat-lbl">RACHA MÁX</div>
+    </div>
+  </div>
+  <button class="btn-primary" onclick="iniciarNivel2()">🚀 AVANZAR AL NIVEL 2</button>
+</div>
+
+<!-- ============ GRAN RETO FINAL ============ -->
+<div class="screen" id="screen-gran-reto">
+  <div class="pregunta-container">
+    <div class="gran-reto-header">
+      <div class="nivel-badge" style="background:linear-gradient(135deg,#8B1A1A,#5a1010)">⭐ GRAN RETO FINAL ⭐</div>
+      <div class="nivel-titulo" style="font-size:clamp(24px,5vw,42px);margin-top:10px">ANÁLISIS INTEGRADOR</div>
+      <div class="sep"></div>
+    </div>
+
+    <div class="pregunta-card">
+      <div class="pregunta-texto" style="margin-bottom:20px">
+        🇨🇴 <strong>Reto de Análisis Final:</strong><br><br>
+        Colombia enfrenta grandes retos en materia de construcción de paz, desarrollo científico-tecnológico y fortalecimiento familiar. Como estudiante de la Universidad Militar Nueva Granada, reflexiona y responde:
+        <br><br>
+        <em>"¿De qué manera la UMNG, como institución educativa al servicio de la Nación, contribuye a la integración entre ciencia, sociedad, familia y cultura de paz en Colombia? Menciona al menos <strong>tres (3) aspectos concretos</strong> y explica por qué son fundamentales para el desarrollo del país."</em>
+      </div>
+
+      <textarea class="textarea-respuesta" id="respuesta-final" placeholder="Escribe aquí tu análisis... (mínimo 3 aspectos concretos)"></textarea>
+
+      <ul class="criterios-list">
+        <li>Menciona el papel de la UMNG en la sociedad colombiana</li>
+        <li>Relaciona ciencia y tecnología con el bienestar social</li>
+        <li>Incluye el rol de la familia como base de la sociedad</li>
+        <li>Conecta todos los temas con la cultura de paz</li>
+      </ul>
+    </div>
+
+    <button class="btn-primary" onclick="evaluarGranReto()" style="margin-top:10px">⚔ ENTREGAR ANÁLISIS FINAL</button>
+  </div>
+</div>
+
+<!-- ============ DERROTA ============ -->
+<div class="screen" id="screen-derrota">
+  <div style="font-size:80px;margin-bottom:20px">💀</div>
+  <div class="nivel-titulo" style="color:#cc4444">MISIÓN FALLIDA</div>
+  <div class="sep" style="background:#cc4444"></div>
+  <p style="color:#c0a0a0;max-width:400px;line-height:1.8;margin-bottom:30px;font-size:15px">
+    Has agotado todas tus vidas. Un verdadero neogranadino no se rinde. Repasa los temas y vuelve con más fuerza. <br><br>
+    <strong style="color:#cc4444">Recuerda:</strong> Necesitas al menos 80% de aciertos para completar la misión.
+  </p>
+  <div style="background:rgba(139,26,26,0.2);border:1px solid #cc4444;padding:20px 30px;border-radius:8px;margin-bottom:30px;max-width:400px">
+    <p style="font-size:13px;color:#d0a0a0;line-height:1.7;text-align:left">
+      💡 <strong style="color:#e0a0a0">Pista de estudio:</strong> Repasa los módulos sobre la UMNG (misión, visión, historia), los temas de CTS (Ciencia, Tecnología y Sociedad), los valores de La Patria y la Familia, y enfócate especialmente en el módulo de Cultura de Paz.
+    </p>
+  </div>
+  <button class="btn-primary" onclick="reiniciarJuego()">🔄 REINTENTAR MISIÓN</button>
+</div>
+
+<!-- ============ VICTORIA ============ -->
+<div class="screen" id="screen-victoria">
+  <div class="estrellas-animadas" id="estrellas-container"></div>
+
+  <div class="certificado" id="certificado-final">
+    <div class="cert-estrella">🏅</div>
+    <div class="cert-titulo-doc">CERTIFICADO DE EXCELENCIA</div>
+    <div class="sep"></div>
+    <div class="cert-nombre">¡MISIÓN CUMPLIDA!</div>
+    <div class="cert-texto">
+      Por haber superado con excelencia el Academic Escape Room<br>
+      <strong style="color:var(--dorado)">OPERACIÓN NEOGRANADINA</strong><br>
+      demostrando dominio en los temas fundamentales de:<br><br>
+      La UMNG · Colombia y La Patria · La Familia<br>
+      Ciencia, Tecnología y Sociedad · Cultura de Paz
+    </div>
+    <div>
+      <span class="cert-escudo">🦅</span>
+      <div class="cert-universidad">UNIVERSIDAD MILITAR NUEVA GRANADA</div>
+      <div class="cert-universidad">CÁTEDRA NEOGRANADINA</div>
+      <div class="cert-fecha" id="cert-fecha">2026</div>
+    </div>
+    <div style="margin-top:25px;padding-top:20px;border-top:1px solid rgba(201,168,76,0.3)">
+      <div style="font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;color:rgba(201,168,76,0.6)">PUNTAJE FINAL</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:48px;color:var(--dorado)" id="cert-puntos">0</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.4)" id="cert-porcentaje">100% de aciertos</div>
+    </div>
+  </div>
+
+  <p style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:15px">
+    📸 Captura pantalla de tu certificado para entregarlo con el enlace del juego
+  </p>
+  <button class="btn-primary" onclick="reiniciarJuego()">🔄 JUGAR DE NUEVO</button>
+</div>
+
+<!-- OVERLAY BONUS -->
+<div class="bonus-overlay" id="bonus-overlay">
+  <div class="bonus-card">
+    <div class="bonus-icono" id="bonus-icono">📦</div>
+    <div class="bonus-titulo" id="bonus-titulo">¡COFRE ENCONTRADO!</div>
+    <div class="bonus-texto" id="bonus-texto">Contenido del cofre</div>
+    <button class="btn-primary" onclick="cerrarBonus()">✓ CONTINUAR</button>
+  </div>
+</div>
+
+<script>
+// ============================
+// BANCO DE PREGUNTAS
+// ============================
+const preguntas = {
+  nivel1: [
+    {
+      texto: "¿En qué año fue fundada la Universidad Militar Nueva Granada (UMNG)?",
+      tipo: "multiple",
+      opciones: ["1976", "1980", "1982", "1990"],
+      correcta: 1,
+      feedback_ok: "¡Correcto! La UMNG fue fundada el 18 de julio de 1980 mediante la Ley 44, siendo una institución de educación superior al servicio de la comunidad de las Fuerzas Militares y la Policía Nacional.",
+      feedback_mal: "Pista: La UMNG nació en la misma época del gobierno del presidente Julio César Turbay Ayala. Fue creada por Ley del Congreso para atender la comunidad militar colombiana.",
+      puntos: 100
+    },
+    {
+      texto: "¿Cuál es la misión principal de la Universidad Militar Nueva Granada?",
+      tipo: "multiple",
+      opciones: [
+        "Formar exclusivamente militares en combate",
+        "Desarrollar la educación superior con criterios de excelencia para la comunidad de la Defensa Nacional y la sociedad",
+        "Investigar tecnologías de guerra",
+        "Administrar los bienes del Ejército Nacional"
+      ],
+      correcta: 1,
+      feedback_ok: "¡Exacto! La UMNG tiene una misión de formación integral con calidad académica, investigación científica y proyección social, siempre orientada al servicio de la Nación.",
+      feedback_mal: "Recuerda: La UMNG es una institución de educación superior con enfoque académico y científico, no solo militar. Su misión es formar profesionales íntegros al servicio de Colombia.",
+      puntos: 100
+    },
+    {
+      texto: "VERDADERO o FALSO: La Constitución Política de Colombia de 1991 reconoce a la familia como el núcleo fundamental de la sociedad.",
+      tipo: "verdadero_falso",
+      opciones: ["VERDADERO", "FALSO"],
+      correcta: 0,
+      feedback_ok: "¡Correcto! El Artículo 42 de la Constitución Colombiana establece que 'La familia es el núcleo fundamental de la sociedad'. El Estado y la sociedad deben garantizar su protección integral.",
+      feedback_mal: "En realidad es VERDADERO. El Art. 42 de la Constitución de 1991 reconoce expresamente a la familia como el núcleo fundamental de la sociedad y garantiza su protección.",
+      puntos: 80
+    },
+    {
+      texto: "La CTS (Ciencia, Tecnología y Sociedad) es una perspectiva interdisciplinar que estudia principalmente:",
+      tipo: "multiple",
+      opciones: [
+        "Solo el desarrollo de armas militares",
+        "Las relaciones entre el conocimiento científico-tecnológico y el contexto social, cultural y político",
+        "Únicamente la historia de los inventos",
+        "El manejo de redes sociales digitales"
+      ],
+      correcta: 1,
+      feedback_ok: "¡Bien! CTS estudia cómo la ciencia y la tecnología están insertas en la sociedad: sus impactos, sus valores, su ética y su relación con el poder y la cultura.",
+      feedback_mal: "Recuerda: CTS (Ciencia, Tecnología y Sociedad) es un enfoque que analiza la relación bidireccional entre los avances científicos y el contexto social donde se producen.",
+      puntos: 100
+    },
+    {
+      texto: "¿Cuántas estrellas tiene el Escudo de Armas de Colombia, representando los departamentos fundadores?",
+      tipo: "multiple",
+      opciones: ["4 estrellas", "6 estrellas", "8 estrellas", "No tiene estrellas"],
+      correcta: 3,
+      feedback_ok: "¡Correcto! El Escudo de Armas de Colombia NO tiene estrellas. Está compuesto por un cóndor en la parte superior, un barco en la parte central derecha, el gorro frigio, y otros elementos simbólicos.",
+      feedback_mal: "El Escudo de Colombia no lleva estrellas. Sus principales elementos son: el cóndor de los Andes, la granada de oro, el barco de vapor y el istmo de Panamá (histórico).",
+      puntos: 80
+    },
+    {
+      texto: "VERDADERO o FALSO: La cultura de paz implica únicamente la ausencia de conflictos armados.",
+      tipo: "verdadero_falso",
+      opciones: ["VERDADERO", "FALSO"],
+      correcta: 1,
+      feedback_ok: "¡Exacto! Es FALSO. La cultura de paz va mucho más allá: incluye la justicia social, el respeto por los derechos humanos, la equidad, el diálogo, la tolerancia y la convivencia pacífica en todos los ámbitos.",
+      feedback_mal: "Es FALSO. La UNESCO define la cultura de paz como un conjunto de valores, actitudes y comportamientos que incluyen el respeto a la vida, el rechazo de la violencia, el diálogo y la cooperación.",
+      puntos: 80
+    },
+    {
+      texto: "¿Cuál de los siguientes es un valor institucional de la UMNG?",
+      tipo: "multiple",
+      opciones: ["Exclusividad", "Integridad", "Supremacía", "Individualismo"],
+      correcta: 1,
+      feedback_ok: "¡Correcto! La UMNG promueve la integridad como valor fundamental, junto con la responsabilidad, el respeto, la transparencia y el compromiso con la excelencia académica.",
+      feedback_mal: "La integridad es el valor correcto. La UMNG basa su formación en valores como la honestidad, el respeto, la responsabilidad y el servicio a la Nación.",
+      puntos: 100
+    },
+    {
+      texto: "En el contexto de la Cátedra Neogranadina, 'La Patria' se entiende como:",
+      tipo: "multiple",
+      opciones: [
+        "El gobierno de turno solamente",
+        "El territorio, la historia, la cultura, los valores y el sentido de pertenencia con Colombia",
+        "Solo el Ejército y sus instituciones",
+        "Las riquezas naturales del país"
+      ],
+      correcta: 1,
+      feedback_ok: "¡Muy bien! La Patria es un concepto integral que abarca el territorio, la historia compartida, la identidad cultural, los símbolos patrios y el amor por Colombia como nación.",
+      feedback_mal: "La Patria es mucho más que el gobierno o el territorio físico. Engloba la identidad, la historia, los valores, los símbolos y el sentido de pertenencia colectiva de los colombianos.",
+      puntos: 100
+    },
+    {
+      texto: "¿Cuál de las siguientes describe MEJOR el concepto de 'familia' según la Cátedra Neogranadina?",
+      tipo: "multiple",
+      opciones: [
+        "Solo la familia nuclear (padre, madre e hijos biológicos)",
+        "Un contrato legal entre dos personas",
+        "El núcleo social fundamental para la formación de valores, identidad y bienestar de sus miembros",
+        "Una institución exclusivamente religiosa"
+      ],
+      correcta: 2,
+      feedback_ok: "¡Correcto! La familia, en toda su diversidad de formas, es el espacio primordial donde se forman los valores, la identidad y se garantiza el bienestar de los individuos y la sociedad.",
+      feedback_mal: "La familia se entiende como el núcleo social donde se transmiten valores, se forma la identidad y se construye el tejido social. Puede tener diversas configuraciones.",
+      puntos: 100
+    },
+    {
+      texto: "VERDADERO o FALSO: Colombia firmó los Acuerdos de Paz de 2016 con el grupo guerrillero FARC-EP, lo que representa un hito hacia la construcción de una cultura de paz.",
+      tipo: "verdadero_falso",
+      opciones: ["VERDADERO", "FALSO"],
+      correcta: 0,
+      feedback_ok: "¡Correcto! En 2016, el gobierno de Juan Manuel Santos firmó el Acuerdo Final con las FARC-EP en La Habana, Cuba. Santos recibió el Premio Nobel de Paz ese mismo año por este proceso.",
+      feedback_mal: "Es VERDADERO. Colombia firmó el Acuerdo de Paz con las FARC-EP en 2016, un proceso histórico que abrió el camino hacia la reconciliación y la construcción de paz en el país.",
+      puntos: 80
+    }
+  ],
+
+  nivel2: [
+    {
+      texto: "Desde la perspectiva CTS (Ciencia, Tecnología y Sociedad), ¿cuál es el principal riesgo cuando la tecnología avanza más rápido que la conciencia ética de la sociedad?",
+      tipo: "multiple",
+      opciones: [
+        "Mayor desempleo temporal",
+        "Desequilibrio social: la tecnología puede usarse para controlar, discriminar o aumentar desigualdades sin marcos éticos adecuados",
+        "Menor productividad empresarial",
+        "Reducción del turismo"
+      ],
+      correcta: 1,
+      feedback_ok: "¡Excelente análisis! La brecha entre avance tecnológico y ética social puede generar vigilancia masiva, deepfakes, exclusión digital, discriminación algorítmica y otros problemas que amenazan los derechos humanos.",
+      feedback_mal: "El mayor riesgo no es económico sino ético y social. Cuando no hay marcos normativos y éticos, la tecnología puede convertirse en herramienta de control, discriminación o guerra.",
+      puntos: 150
+    },
+    {
+      texto: "¿Cuál de los siguientes principios NO forma parte de los Acuerdos de Paz de Colombia de 2016?",
+      tipo: "multiple",
+      opciones: [
+        "Reforma Rural Integral",
+        "Participación política de excombatientes",
+        "Expulsión permanente de los firmantes del país",
+        "Sustitución de cultivos ilícitos"
+      ],
+      correcta: 2,
+      feedback_ok: "¡Correcto! El acuerdo NO incluyó la expulsión. Al contrario, contempló la reincorporación a la vida civil, la participación política y la justicia transicional con reparación a víctimas.",
+      feedback_mal: "La expulsión del país no es parte de los acuerdos. Los 6 puntos del Acuerdo incluían: Reforma Rural, Participación Política, Fin del Conflicto, Drogas Ilícitas, Víctimas e Implementación.",
+      puntos: 150
+    },
+    {
+      texto: "CASO: Un estudiante de la UMNG descubre que su compañero está cometiendo plagio académico. Según los valores neogranadinos, ¿cuál es la acción más coherente con la integridad institucional?",
+      tipo: "multiple",
+      opciones: [
+        "Ignorarlo para no generar conflictos",
+        "Copiar también para no quedar en desventaja",
+        "Hablar primero con el compañero y si no cambia, reportarlo según el reglamento estudiantil",
+        "Publicarlo en redes sociales inmediatamente"
+      ],
+      correcta: 2,
+      feedback_ok: "¡Muy bien! Esta respuesta refleja los valores de integridad, respeto y responsabilidad de la UMNG: primero el diálogo directo y fraterno, luego los canales institucionales formales.",
+      feedback_mal: "La respuesta correcta es hablar primero con el compañero. Esto refleja los valores de diálogo y respeto, y si no hay cambio, los canales institucionales garantizan la integridad académica.",
+      puntos: 150
+    },
+    {
+      texto: "La Cátedra Neogranadina enfatiza la 'cultura de paz' porque Colombia históricamente ha vivido un conflicto armado interno. ¿Qué rol juega la educación superior en este proceso?",
+      tipo: "multiple",
+      opciones: [
+        "Ninguno, la paz es responsabilidad solo del gobierno",
+        "Formar ciudadanos críticos, empáticos y comprometidos con la convivencia, la justicia y los derechos humanos",
+        "Solo preparar técnicos para reconstruir infraestructura",
+        "Eliminar el pensamiento crítico para evitar conflictos"
+      ],
+      correcta: 1,
+      feedback_ok: "¡Excelente! La educación superior es un actor fundamental en la construcción de paz: forma ciudadanos con pensamiento crítico, valores democráticos y capacidad de contribuir a la reconciliación nacional.",
+      feedback_mal: "La educación superior tiene un papel central: forma ciudadanos capaces de transformar la realidad social, promover el diálogo, respetar los derechos humanos y construir paz desde sus profesiones.",
+      puntos: 150
+    },
+    {
+      texto: "VERDADERO o FALSO: Los Objetivos de Desarrollo Sostenible (ODS) de la ONU están directamente relacionados con los temas de Ciencia, Tecnología, Sociedad y Cultura de Paz estudiados en la Cátedra Neogranadina.",
+      tipo: "verdadero_falso",
+      opciones: ["VERDADERO", "FALSO"],
+      correcta: 0,
+      feedback_ok: "¡Correcto! Los 17 ODS incluyen: Paz, justicia e instituciones sólidas (ODS 16), Educación de calidad (ODS 4), Ciencia e innovación (ODS 9), entre otros. Todos conectan con los temas de la cátedra.",
+      feedback_mal: "Es VERDADERO. Los ODS de la ONU (Agenda 2030) abordan justamente las intersecciones entre ciencia, tecnología, sociedad, paz y desarrollo sostenible que estudia la Cátedra Neogranadina.",
+      puntos: 120
+    },
+    {
+      texto: "¿Cuál de las siguientes acciones de la UMNG refleja mejor su compromiso con la Proyección Social y la Responsabilidad con Colombia?",
+      tipo: "multiple",
+      opciones: [
+        "Cobrar matrículas muy altas para ser exclusiva",
+        "Desarrollar investigaciones aplicadas a problemáticas de seguridad, salud y tecnología para beneficio de la sociedad colombiana",
+        "Limitar sus servicios solo a militares activos",
+        "No publicar sus resultados de investigación"
+      ],
+      correcta: 1,
+      feedback_ok: "¡Correcto! La UMNG tiene una fuerte función de proyección social: sus grupos de investigación trabajan en soluciones reales para Colombia en medicina, ingeniería, derecho, ciencias económicas y más.",
+      feedback_mal: "La proyección social de la UMNG se refleja en su investigación aplicada, sus programas de extensión comunitaria y su compromiso con generar conocimiento útil para el desarrollo del país.",
+      puntos: 150
+    },
+    {
+      texto: "CASO DE ANÁLISIS: Una familia colombiana ha vivido el desplazamiento forzado por el conflicto armado. Desde la perspectiva de la Cátedra Neogranadina, ¿qué elementos son fundamentales para su proceso de reconstrucción?",
+      tipo: "multiple",
+      opciones: [
+        "Solo ayuda económica inmediata",
+        "Únicamente apoyo psicológico individual",
+        "Un enfoque integral: reconocimiento como víctimas, apoyo psicosocial, reintegración social, acceso a educación y garantías de no repetición",
+        "Olvidar lo ocurrido y no hablar del tema"
+      ],
+      correcta: 2,
+      feedback_ok: "¡Excelente análisis! El enfoque integral es clave. La Ley de Víctimas (1448 de 2011) en Colombia establece precisamente estos componentes: verdad, justicia, reparación integral y garantías de no repetición.",
+      feedback_mal: "La reconstrucción familiar requiere un enfoque integral. La Ley de Víctimas de Colombia (1448/2011) reconoce que las víctimas necesitan verdad, justicia, reparación y garantías de no repetición.",
+      puntos: 150
+    },
+    {
+      texto: "VERDADERO o FALSO: La innovación tecnológica siempre tiene consecuencias positivas para la sociedad y no requiere regulación ética.",
+      tipo: "verdadero_falso",
+      opciones: ["VERDADERO", "FALSO"],
+      correcta: 1,
+      feedback_ok: "¡Correcto! Es FALSO. Toda innovación puede tener efectos negativos si no se regula adecuadamente. La inteligencia artificial, la biotecnología y las redes sociales son ejemplos que requieren marcos éticos y legales.",
+      feedback_mal: "Es FALSO. La tecnología no es neutra: puede usarse para el bien o para el mal. Por eso existe la bioética, la ética informática y marcos legales como el RGPD en Europa o leyes de datos en Colombia.",
+      puntos: 120
+    },
+    {
+      texto: "¿Cuál de los siguientes conceptos describe MEJOR la visión de 'Patria' que promueve la Cátedra Neogranadina para el siglo XXI?",
+      tipo: "multiple",
+      opciones: [
+        "Un nacionalismo excluyente que rechaza lo extranjero",
+        "Un amor crítico y constructivo por Colombia, que reconoce sus logros y trabaja activamente para superar sus desafíos",
+        "La obediencia ciega a las instituciones del Estado",
+        "La resignación ante los problemas del país"
+      ],
+      correcta: 1,
+      feedback_ok: "¡Muy bien! El patriotismo crítico y constructivo implica amar a Colombia lo suficiente como para querer transformarla: conocer su historia, celebrar sus logros y comprometerse con su mejora.",
+      feedback_mal: "La Cátedra promueve un patriotismo reflexivo: no ciego ni pasivo, sino basado en el conocimiento crítico de la realidad colombiana y el compromiso activo con su transformación positiva.",
+      puntos: 150
+    },
+    {
+      texto: "¿Cuál es la relación correcta entre la familia, la educación y la cultura de paz según los contenidos de la Cátedra Neogranadina?",
+      tipo: "multiple",
+      opciones: [
+        "Son temas completamente independientes y no tienen relación",
+        "La familia solo importa en la infancia; la educación y la paz son asuntos del Estado",
+        "La familia es el primer espacio de aprendizaje de valores de convivencia; la educación formal los refuerza; juntas construyen una cultura de paz duradera",
+        "La paz se logra solo mediante acuerdos diplomáticos entre gobiernos"
+      ],
+      correcta: 2,
+      feedback_ok: "¡Perfecto! Esta es la visión integral: la paz no se construye solo con tratados, sino desde el hogar, pasando por las instituciones educativas, hasta llegar a toda la sociedad. Es un proceso cultural profundo.",
+      feedback_mal: "La relación es sistémica: la familia enseña valores de respeto y convivencia desde temprana edad; la educación los desarrolla y amplía; juntos crean las condiciones para una paz sostenible.",
+      puntos: 150
+    }
+  ]
+};
+
+// ============================
+// ESTADO DEL JUEGO
+// ============================
+let estado = {
+  nivel: 1,
+  preguntaActual: 0,
+  puntos: 0,
+  vidas: 3,
+  correctas: 0,
+  incorrectas: 0,
+  rachaActual: 0,
+  rachaMáx: 0,
+  totalPreguntas: 0,
+  respondida: false,
+  bonusCount: 0
+};
+
+let preguntasNivelActual = [];
+
+// ============================
+// FUNCIONES PRINCIPALES
+// ============================
+
+function iniciarJuego() {
+  document.getElementById('hud').style.display = 'flex';
+  mostrarPantallaDeNivel(1);
+}
+
+function mostrarPantallaDeNivel(num) {
+  estado.nivel = num;
+  if (num === 1) {
+    document.getElementById('nivel-badge').textContent = 'NIVEL 1 · OPERATIVO BÁSICO';
+    document.getElementById('nivel-titulo').textContent = 'RECONOCIMIENTO DEL TERRITORIO';
+    document.getElementById('nivel-descripcion').textContent = 'Demuestra tu conocimiento sobre los fundamentos de la UMNG, Colombia, la familia y la ciencia. Responde con precisión para acumular puntos y avanzar al Nivel 2.';
+    const temas = ['🏛 UMNG', '🇨🇴 La Patria', '👨‍👩‍👧 La Familia', '🔬 Ciencia', '💻 Tecnología'];
+    document.getElementById('nivel-temas').innerHTML = temas.map(t => `<span class="chip">${t}</span>`).join('');
+  } else {
+    document.getElementById('nivel-badge').textContent = 'NIVEL 2 · OPERATIVO AVANZADO';
+    document.getElementById('nivel-titulo').innerHTML = 'ANÁLISIS<br>PROFUNDO';
+    document.getElementById('nivel-descripcion').textContent = 'Preguntas de análisis, casos prácticos y dilemas éticos sobre cultura de paz, CTS y el rol de la UMNG en Colombia. ¡Este nivel es desafiante!';
+    const temas = ['☮ Cultura de Paz', '🔭 CTS Avanzado', '⚖ Ética', '📋 Casos Reales', '🌍 ODS'];
+    document.getElementById('nivel-temas').innerHTML = temas.map(t => `<span class="chip">${t}</span>`).join('');
+  }
+  cambiarPantalla('screen-nivel');
+  actualizarHUD();
+}
+
+function comenzarNivel() {
+  preguntasNivelActual = mezclar([...preguntas[`nivel${estado.nivel}`]]);
+  estado.preguntaActual = 0;
+  estado.respondida = false;
+  mostrarPregunta();
+  cambiarPantalla('screen-pregunta');
+}
+
+function mostrarPregunta() {
+  const p = preguntasNivelActual[estado.preguntaActual];
+  const total = preguntasNivelActual.length;
+
+  document.getElementById('pregunta-num').textContent = `MISIÓN ${String(estado.preguntaActual+1).padStart(2,'0')}/${String(total).padStart(2,'0')}`;
+  document.getElementById('tipo-badge').textContent = p.tipo === 'verdadero_falso' ? 'VERDADERO / FALSO' : p.tipo === 'caso' ? 'CASO PRÁCTICO' : 'OPCIÓN MÚLTIPLE';
+  document.getElementById('pregunta-texto').innerHTML = p.texto;
+
+  const letras = ['A','B','C','D'];
+  const opcionesHTML = p.opciones.map((op, i) => `
+    <button class="opcion-btn" onclick="seleccionarOpcion(${i})" id="opcion-${i}">
+      <span class="opcion-letra">${p.tipo === 'verdadero_falso' ? (i===0?'V':'F') : letras[i]}</span>
+      ${op}
+    </button>
+  `).join('');
+
+  document.getElementById('opciones-container').innerHTML = opcionesHTML;
+  document.getElementById('feedback-box').className = 'feedback-box';
+  document.getElementById('btn-siguiente').style.display = 'none';
+  estado.respondida = false;
+
+  actualizarHUD();
+}
+
+function seleccionarOpcion(idx) {
+  if (estado.respondida) return;
+  estado.respondida = true;
+
+  const p = preguntasNivelActual[estado.preguntaActual];
+  const esCorrecta = idx === p.correcta;
+
+  // Deshabilitar botones
+  document.querySelectorAll('.opcion-btn').forEach(btn => btn.disabled = true);
+
+  if (esCorrecta) {
+    document.getElementById(`opcion-${idx}`).classList.add('correcta');
+    estado.puntos += p.puntos;
+    estado.correctas++;
+    estado.rachaActual++;
+    if (estado.rachaActual > estado.rachaMáx) estado.rachaMáx = estado.rachaActual;
+
+    mostrarFeedback(true, '✅ ¡MISIÓN EXITOSA!', p.feedback_ok);
+
+    // Bonus cada 3 correctas seguidas
+    if (estado.rachaActual % 3 === 0) {
+      setTimeout(() => mostrarBonus(), 800);
+    }
+  } else {
+    document.getElementById(`opcion-${idx}`).classList.add('incorrecta');
+    document.getElementById(`opcion-${p.correcta}`).classList.add('mostrar-correcta');
+    estado.vidas--;
+    estado.incorrectas++;
+    estado.rachaActual = 0;
+    mostrarFeedback(false, '❌ MISIÓN FALLIDA', p.feedback_mal);
+    actualizarVidas();
+
+    if (estado.vidas <= 0) {
+      setTimeout(() => cambiarPantalla('screen-derrota'), 2000);
+      return;
+    }
+  }
+
+  document.getElementById('btn-siguiente').style.display = 'block';
+  actualizarHUD();
+}
+
+function mostrarFeedback(correcto, titulo, texto) {
+  const box = document.getElementById('feedback-box');
+  box.className = `feedback-box ${correcto ? 'correcto' : 'incorrecto'}`;
+  document.getElementById('feedback-titulo').textContent = titulo;
+  document.getElementById('feedback-texto').textContent = texto;
+}
+
+function siguientePregunta() {
+  estado.preguntaActual++;
+  const total = preguntasNivelActual.length;
+
+  if (estado.preguntaActual >= total) {
+    // Fin del nivel
+    if (estado.nivel === 1) {
+      // Mostrar pantalla entre niveles
+      document.getElementById('stats-correctas').textContent = estado.correctas;
+      document.getElementById('stats-puntos').textContent = estado.puntos;
+      document.getElementById('stats-racha').textContent = estado.rachaMáx;
+      estado.totalPreguntas = total;
+      cambiarPantalla('screen-entre-niveles');
+    } else {
+      // Fin nivel 2 → Gran Reto
+      estado.totalPreguntas += total;
+      cambiarPantalla('screen-gran-reto');
+    }
+  } else {
+    mostrarPregunta();
+  }
+}
+
+function iniciarNivel2() {
+  estado.totalPreguntas = preguntasNivelActual.length;
+  mostrarPantallaDeNivel(2);
+}
+
+function evaluarGranReto() {
+  const respuesta = document.getElementById('respuesta-final').value.trim();
+  if (respuesta.length < 50) {
+    alert('⚠ Por favor escribe una respuesta más completa (mínimo 3 aspectos con justificación).');
+    return;
+  }
+
+  // Contar palabras clave mencionadas
+  const palabrasClave = ['umng', 'universidad', 'ciencia', 'tecnología', 'familia', 'paz', 'colombia', 'sociedad', 'investigación', 'valores'];
+  const respLower = respuesta.toLowerCase();
+  const hits = palabrasClave.filter(p => respLower.includes(p)).length;
+
+  estado.puntos += Math.min(hits * 30, 250); // hasta 250 puntos bonus
+
+  // Calcular resultado final
+  const totalPreguntas = preguntas.nivel1.length + preguntas.nivel2.length;
+  const porcentaje = Math.round((estado.correctas / totalPreguntas) * 100);
+
+  if (porcentaje >= 80 || estado.correctas >= Math.floor(totalPreguntas * 0.8)) {
+    mostrarVictoria(porcentaje);
+  } else {
+    // Verificar si aún así pasan (con el gran reto)
+    if (estado.correctas >= Math.floor(totalPreguntas * 0.75) && hits >= 5) {
+      mostrarVictoria(porcentaje);
+    } else {
+      cambiarPantalla('screen-derrota');
+    }
+  }
+}
+
+function mostrarVictoria(porcentaje) {
+  document.getElementById('cert-puntos').textContent = estado.puntos.toLocaleString();
+  document.getElementById('cert-porcentaje').textContent = `${porcentaje}% de aciertos · ¡Excelencia Neogranadina!`;
+  const hoy = new Date();
+  document.getElementById('cert-fecha').textContent = hoy.toLocaleDateString('es-CO', {year:'numeric',month:'long',day:'numeric'});
+
+  cambiarPantalla('screen-victoria');
+  lanzarEstrellas();
+}
+
+function reiniciarJuego() {
+  estado = { nivel:1, preguntaActual:0, puntos:0, vidas:3, correctas:0, incorrectas:0, rachaActual:0, rachaMáx:0, totalPreguntas:0, respondida:false, bonusCount:0 };
+  document.getElementById('hud').style.display = 'none';
+  actualizarVidas();
+  actualizarHUD();
+  cambiarPantalla('screen-intro');
+}
+
+// ============================
+// BONUS COFRE
+// ============================
+function mostrarBonus() {
+  estado.bonusCount++;
+  const bonuses = [
+    { icono:'🎯', titulo:'¡RACHA PERFECTA!', texto:`¡3 respuestas correctas seguidas! Bonus de +50 puntos por tu concentración táctica.`, extra:50 },
+    { icono:'📚', titulo:'¡COFRE DEL SABER!', texto:`¡Excelente desempeño! Dato extra: La UMNG tiene campus en Bogotá, Cajicá y otras sedes, con más de 20.000 estudiantes activos.`, extra:30 },
+    { icono:'🏅', titulo:'¡MEDALLA ACADÉMICA!', texto:`¡Imparable! Colombia es el tercer país de Latinoamérica con más biodiversidad y el segundo con más especies de aves en el mundo.`, extra:30 },
+    { icono:'⭐', titulo:'¡PUNTO DE CONTROL!', texto:`Progreso excelente. Recuerda: La cultura de paz incluye equidad, justicia social, no violencia y respeto por los derechos humanos.`, extra:50 }
+  ];
+  const bonus = bonuses[estado.bonusCount % bonuses.length];
+  estado.puntos += bonus.extra;
+
+  document.getElementById('bonus-icono').textContent = bonus.icono;
+  document.getElementById('bonus-titulo').textContent = bonus.titulo;
+  document.getElementById('bonus-texto').textContent = bonus.texto;
+  document.getElementById('bonus-overlay').classList.add('show');
+  actualizarHUD();
+}
+
+function cerrarBonus() {
+  document.getElementById('bonus-overlay').classList.remove('show');
+}
+
+// ============================
+// UTILIDADES
+// ============================
+function cambiarPantalla(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function actualizarHUD() {
+  document.getElementById('hud-nivel').textContent = estado.nivel;
+  document.getElementById('hud-puntos').textContent = estado.puntos;
+
+  const total = preguntasNivelActual.length || 10;
+  const prog = Math.round((estado.preguntaActual / total) * 100);
+  document.getElementById('barra-fill').style.width = prog + '%';
+  document.getElementById('hud-prog-label').textContent = `MISIÓN ${estado.preguntaActual}/${total}`;
+}
+
+function actualizarVidas() {
+  const vidas = document.querySelectorAll('.vida');
+  vidas.forEach((v, i) => {
+    v.classList.toggle('perdida', i >= estado.vidas);
+  });
+}
+
+function mezclar(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function lanzarEstrellas() {
+  const container = document.getElementById('estrellas-container');
+  const emojis = ['⭐','🌟','✨','🏅','🎖','🦅','🇨🇴'];
+  for (let i = 0; i < 30; i++) {
+    setTimeout(() => {
+      const e = document.createElement('div');
+      e.className = 'estrella-particle';
+      e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      e.style.left = Math.random() * 100 + 'vw';
+      e.style.animationDelay = Math.random() * 0.5 + 's';
+      e.style.fontSize = (16 + Math.random() * 20) + 'px';
+      container.appendChild(e);
+      setTimeout(() => e.remove(), 3500);
+    }, i * 100);
+  }
+  setTimeout(lanzarEstrellas, 4000);
+}
+</script>
+</body>
+</html>
